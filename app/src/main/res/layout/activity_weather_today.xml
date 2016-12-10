@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_snow">
+
+    <!--今日天气信息-->
+    <RelativeLayout
+        android:id="@+id/weather_today"
+        android:layout_width="fill_parent"
+        android:layout_height="350dp">
+
+
+        <!--顶部工具栏-->
+        <!--城市管理按钮-->
+        <ImageView
+            android:id="@+id/title_city_manager"
+            android:layout_width="45.0dp"
+            android:layout_height="45.0dp"
+            android:src="@drawable/btn_location" />
+
+        <!--城市名称-->
+        <TextView
+            android:id="@+id/title_city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="45.0dp"
+            android:layout_toRightOf="@id/title_city_manager"
+            android:gravity="center_vertical"
+            android:paddingLeft="2.0dp"
+            android:text="@string/city_name"
+            android:textColor="#ffffffff"
+            android:textSize="15.0sp" />
+
+        <!--更新信息按钮-->
+        <ImageView
+            android:id="@+id/title_update_btn"
+            android:layout_width="34.0dp"
+            android:layout_height="34.0dp"
+            android:paddingTop="15dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/btn_update" />
+
+        <!--更新时间-->
+        <TextView
+            android:id="@+id/update_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:text="20:00更新"
+            android:textColor="#fdfcfc"
+            android:textSize="15.0sp"
+            android:layout_toLeftOf="@id/title_update_btn"/>
+        <!--今日天气信息-->
+
+        <!--分隔条-->
+        <ImageView
+            android:id="@+id/white_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="40dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/whitebar" />
+
+        <!--实时温度-->
+        <TextView
+            android:id="@+id/wendu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_above="@id/white_bar"
+            android:paddingLeft="45dp"
+            android:paddingBottom="1dp"
+            android:text="9°"
+            android:textColor="@android:color/white"
+            android:textSize="60.0sp" />
+
+        <!--天气状况,晴,多云-->
+        <TextView
+            android:id="@+id/type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/wendu"
+            android:layout_above="@id/white_bar"
+            android:paddingLeft="0dp"
+            android:paddingBottom="10dp"
+            android:text="晴"
+            android:textColor="@android:color/white"
+            android:textSize="20.0sp" />
+
+
+
+
+        <!--图标，用于扩展其他功能-->
+        <TextView
+            android:id="@+id/date_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/white_bar"
+            android:paddingLeft="45dp"
+            android:text="今日"
+            android:textColor="@android:color/white"
+            android:textSize="15.0sp" />
+
+        <!--今日日期-->
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/white_bar"
+            android:layout_toRightOf="@id/date_pic"
+            android:paddingLeft="20dp"
+            android:text="12-8 周四"
+            android:textColor="@android:color/white"
+            android:textSize="15.0sp" />
+
+
+        <!--pm2.5图标背景颜色，污染等级不同颜色不同-->
+
+
+        <!--pm2.5-->
+        <!--pm2.5图标-->
+        <ImageView
+            android:id="@+id/pm2_5_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/date_pic"
+            android:paddingLeft="48dp"
+            android:paddingTop="10dp"
+            android:src="@drawable/air_icon_5" />
+        <!--pm2.5图标背景颜色，污染等级不同颜色不同-->
+
+
+        <!--pm2.5数值-->
+        <TextView
+            android:id="@+id/pm25"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/pm2_5_img"
+            android:layout_below="@id/date_pic"
+            android:paddingLeft="8dp"
+            android:paddingTop="10dp"
+            android:text="409"
+            android:textColor="@android:color/white"
+            android:textSize="15.0sp" />
+
+        <!--空气质量-->
+        <TextView
+            android:id="@+id/quality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/pm25"
+            android:layout_below="@id/date_pic"
+            android:paddingLeft="8dp"
+            android:paddingTop="10dp"
+            android:text="重度污染"
+            android:textColor="@android:color/white"
+            android:textSize="15.0sp" />
+
+    </RelativeLayout>
+
+
+    <!--未来三天天气信息-->
+    <RelativeLayout
+        android:id="@+id/weather_fulture"
+        android:layout_below="@id/weather_today"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+
+        <!--今日-->
+        <!--最低~最高温度-->
+        <TextView
+            android:id="@+id/weather01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="35dp"
+            android:paddingBottom="20dp"
+            android:text="3~5°"
+            android:textSize="15sp"
+            android:textColor="#cfffffff"
+            android:layout_alignParentBottom="true" />
+
+        <!--今日-->
+        <TextView
+            android:id="@+id/weather01_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/weather01"
+            android:paddingLeft="50dp"
+            android:paddingBottom="5dp"
+            android:text="@string/fulture_weather01"
+            android:textSize="15sp"
+            android:textColor="#cfffffff"
+            />
+
+        <!--天气图标-->
+        <ImageView
+            android:id="@+id/weather01_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/weather01_tips"
+            android:paddingLeft="45dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/sun"/>
+
+        <!--明日-->
+        <!--最低~最高温度-->
+        <TextView
+            android:id="@+id/weather02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="20dp"
+            android:text="3~5°"
+            android:textSize="15sp"
+            android:textColor="#cfffffff"
+            android:layout_centerHorizontal="true" />
+        <!--明日-->
+        <TextView
+            android:id="@+id/weather02_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/weather02"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="5dp"
+            android:text="@string/fulture_weather02"
+            android:textSize="15sp"
+            android:textColor="#cfffffff"
+            />
+        <!--天气图标-->
+        <ImageView
+            android:id="@+id/weather02_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/weather02_tips"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="10dp"
+            android:src="@drawable/could"/>
+
+        <!--后日-->
+        <!--最低~最高温度-->
+        <TextView
+            android:id="@+id/weather03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="20dp"
+            android:text="3~5°"
+            android:textSize="15sp"
+            android:textColor="#cfffffff"
+            android:paddingRight="35dp"
+            android:layout_alignParentRight="true" />
+
+        <!--后日-->
+        <TextView
+            android:id="@+id/weather03_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/weather03"
+            android:paddingBottom="5dp"
+            android:text="@string/fulture_weather03"
+            android:textSize="15sp"
+            android:textColor="#cfffffff"
+            android:paddingRight="50dp"
+            android:layout_alignParentRight="true"
+            />
+
+        <!--天气图标-->
+        <ImageView
+            android:id="@+id/weather03_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/weather02_tips"
+            android:paddingRight="43dp"
+            android:layout_alignParentRight="true"
+            android:paddingBottom="5dp"
+            android:src="@drawable/snow"/>
+    </RelativeLayout>
+
+
+
+
+
+</RelativeLayout>

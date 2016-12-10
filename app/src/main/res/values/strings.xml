@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">天气v5</string>
+    <string name="app_name">天气</string>
+
+    <!--今日天气信息-->
+    <!--顶部工具栏-->
+    <string name="city_name">北京</string>
+    <!--天气详细信息-->
+    <string name="type_sunny">晴</string>
+
+
+    <!--未来三天天气信息-->
+    <string name="fulture_weather01">今日</string>
+    <string name="fulture_weather02">明日</string>
+    <string name="fulture_weather03">后日</string>
 </resources>
