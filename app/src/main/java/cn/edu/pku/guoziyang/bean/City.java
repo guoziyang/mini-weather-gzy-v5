@@ -68,4 +68,9 @@ public class City {
     public void setAllFirstPY(String allFirstPY) {
         this.allFirstPY = allFirstPY;
     }
+
+    @Override
+    public String toString() {
+        return "城市列表信息：" + city + " : " +  number+ " : " +  allPY+ " : " +  allFirstPY+ " : " +  firstPV ;
+    }
 }

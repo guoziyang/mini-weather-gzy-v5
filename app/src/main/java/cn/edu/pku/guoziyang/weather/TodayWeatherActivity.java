@@ -51,6 +51,8 @@ public class TodayWeatherActivity extends Activity {
     //城市编码
     String cityCode,currentCityCode,selectCityCode;
 
+    TodayWeather todayWeather = null;
+
 
 
     @Override
@@ -66,8 +68,8 @@ public class TodayWeatherActivity extends Activity {
             public void onClick(View v) {
                 //为城市管理按钮添加意图,实现功能:点击后跳转到selectCity页面
                 Intent i = new Intent(TodayWeatherActivity.this,SelectCityActivity.class);
+                i.putExtra("cityName",todayWeather.getCity());
                 startActivityForResult(i,1);
-                Toast.makeText(TodayWeatherActivity.this, "点击城市管理按钮！ ", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -236,7 +238,7 @@ public class TodayWeatherActivity extends Activity {
     private TodayWeather  parseXML(String xmldata) {
 
         //保存更新的天气信息
-        TodayWeather todayWeather = null;
+//        TodayWeather todayWeather = null;
 
         int fengxiangCount = 0;
         int fengliCount = 0;
@@ -374,54 +376,71 @@ public class TodayWeatherActivity extends Activity {
      *
      */
     void updateTodayWeather(TodayWeather todayWeather){
-        //更新数据到控件
-        String city_name,wendu,time,pmData,pmQuality,week,climate;
-        String low,low2,low3,hign,hign2,hign3;
+        if(todayWeather.getCity()==null){
+            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+            SharedPreferences.Editor editor=sharedPreferences.edit();
+            editor.putString("cityCode",currentCityCode);//保存选择的城市
+            editor.commit();
+            Toast.makeText(TodayWeatherActivity.this, "未找到该城市天气信息！", Toast.LENGTH_SHORT).show();
+        }else {
+            currentCityCode = selectCityCode;
 
-        //获取更新的数据（从Sharepreference中获取）
-        city_name = todayWeather.getCity();
-        wendu = todayWeather.getWendu();
-        time = todayWeather.getUpdatetime();
-        pmData = todayWeather.getPm25();
-        pmQuality = todayWeather.getQuality();
-        week = todayWeather.getDate();
-        climate = todayWeather.getType();
+            //更新数据到控件
+            String city_name, wendu, time, pmData, pmQuality, week, climate;
+            String low, low2, low3, hign, hign2, hign3;
 
-        //今日
-        hign = todayWeather.getHigh();
-        low = todayWeather.getLow();
-        //明日
-        hign2 = todayWeather.getHigh2();
-        low2 = todayWeather.getLow2();
-        //后日
-        hign3 = todayWeather.getHigh3();
-        low3 = todayWeather.getLow3();
+            //获取更新的数据（从Sharepreference中获取）
+            city_name = todayWeather.getCity();
+            wendu = todayWeather.getWendu();
+            time = todayWeather.getUpdatetime();
+            pmData = todayWeather.getPm25();
+            if(pmData==null){
+                SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+                //获取上级城市名称
+                String province =sharedPreferences.getString("province","");
+                //获取上级城市编码（方法：通过城市名称查询城市编码）
+                //获取上级城市pm2.5数据
+
+            }
+            pmQuality = todayWeather.getQuality();
+            week = todayWeather.getDate();
+            climate = todayWeather.getType();
+
+            //今日
+            hign = todayWeather.getHigh();
+            low = todayWeather.getLow();
+            //明日
+            hign2 = todayWeather.getHigh2();
+            low2 = todayWeather.getLow2();
+            //后日
+            hign3 = todayWeather.getHigh3();
+            low3 = todayWeather.getLow3();
 
 
-        //显示到控件显示
-        city_name_Tv.setText(city_name);
-        wenduTv.setText(wendu + "°");
-        timeTv.setText(time + "发布");
-        pmDataTv.setText(pmData);
-        pmQualityTv.setText(pmQuality);
-        weekTv.setText(week);
-        climateTv.setText(climate);
+            //显示到控件显示
+            city_name_Tv.setText(city_name);
+            wenduTv.setText(wendu + "°");
+            timeTv.setText(time + "发布");
+            pmDataTv.setText(pmData);
+            pmQualityTv.setText(pmQuality);
+            weekTv.setText(week);
+            climateTv.setText(climate);
 
-        //近三日天气
-        temperatureTv1.setText(low + "~" + hign);
-        temperatureTv2.setText(low2 + "~" + hign2);
-        temperatureTv3.setText(low3 + "~" + hign3);
-
+            //近三日天气
+            temperatureTv1.setText(low + "~" + hign);
+            temperatureTv2.setText(low2 + "~" + hign2);
+            temperatureTv3.setText(low3 + "~" + hign3);
+        }
     }
 
 
     //选择城市后，将该城市的编码回传
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG,"TodayWeatherActivity----------------->onActivityResult方法");
         if(requestCode==1&&resultCode==1){
             //获取用户选择的城市编码
             String select_city_code = data.getStringExtra("select_city_code");
+            String select_city_province = data.getStringExtra("select_city_province");
             Log.d(TAG,"接收到的选择城市编码----------------->："+ select_city_code);
 
             //将用户选择的城市编码保存，用于下次访问自动更新天气信息

@@ -13,8 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.lang.String;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,12 +31,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import cn.edu.pku.guoziyang.app.MyApplication;
 import cn.edu.pku.guoziyang.bean.City;
 import cn.edu.pku.guoziyang.bean.TodayWeather;
+import cn.edu.pku.guoziyang.db.CityDB;
 
 /**
  * 选择城市界面
@@ -42,199 +47,111 @@ import cn.edu.pku.guoziyang.bean.TodayWeather;
  * 功能：在城市列表中选择城市，更新该城市的天气信息，并在主界面显示该城市的天气
  */
 
-public class SelectCityActivity extends Activity {
+public class SelectCityActivity extends Activity{
 
-    //Log信息标签
-    private String TAG = "myWeather";
-
-    //城市列表数据
-    public static List city_list;
-    //listview的监听器
-    ArrayAdapter<String> adapter;
-
-
-    //显示全部城市列表为false,显示匹配的城市列表ture
-    boolean isMatchMode = false;
-
-    //定义TodayWeather对象
-    TodayWeather todayWeather = null;
-
-    //界面返回按钮
     private ImageView mBackBtn;
-    //搜索框
-    public EditText search_edit;
+    private ListView mListView;
+    private CityDB myCityDB;
+    private MyApplication myapp;
+    private List<City> myList;
+    private TextView titleName;
+    private EditText eSearch;
+    private SimpleAdapter adapter;
 
-    //界面标题
-    private TextView selectCityName;
-
-    City city;
-
-    //ListView控件，存放全部程序列表
-    private List<String> data = new ArrayList<String>();
-    //用户存放城市名称和对应城市编码（用于天气更新）
-    //其中key为城市编码，value为城市名称
-    private HashMap hm = new HashMap();
-    //ListView控件，存放根据搜索匹配的城市列表
-    private List<String> dataMatch = new ArrayList<String>();
-    private HashMap hmMatch = new HashMap();
-
-
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //与布局文件关联
         setContentView(R.layout.activity_select_city);
 
+        eSearch=(EditText)findViewById(R.id.search_edit);
 
-        //获取全部城市列表（从数据库中）
-        MyApplication myApplication = MyApplication.getInstance();
-        city_list = myApplication.getmCityList();
+        Intent intent=this.getIntent();
+        String cityName=intent.getStringExtra("cityName");
 
-        //返回今日天气信息界面按钮
+        //标题当前城市
+        titleName=(TextView)findViewById(R.id.title_name);
+        titleName.setText("当前城市："+cityName);
+
+
+        //返回按钮
         mBackBtn = (ImageView) findViewById(R.id.title_back);
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent();
-//                i.putExtra("select_city_code", "101160101");
-//                setResult(1,i);
                 finish();
             }
         });
 
+        //显示城市列表
+        mListView = (ListView)findViewById(R.id.list_view);
+        adapter=new SimpleAdapter(this, (List<? extends Map<String, ?>>) getdata(),R.layout.activity_listview_item,
+                new String[]{"cityName","cityCode"},
+                new int[] {R.id.cityName,R.id.cityCode});
+        mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(new ItemClickEvent());
 
-        //标题栏，当前城市
-        selectCityName = (TextView) findViewById(R.id.title_name);
-
-        //对搜索框的输入文本监听
-        TextWatcher searchTextWatcher = new TextWatcher() {
-            private CharSequence temp;
-            private int editStart ;
-            private int editEnd ;
+        //监听搜索框文本
+        eSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.d(TAG,"onTextChanged:"+charSequence) ;
-                //清空listView(清空data数组)
-                //根据输入，显示匹配的结果
-                Log.d("match","监听的输入字符串：" + charSequence.toString());
-                dataMatch.clear();
-                matchCity(charSequence.toString());
-                isMatchMode = true;
-
-
-
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //搜索匹配
+                adapter.getFilter().filter(s);
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        };
-
-        //搜索框
-        search_edit = (EditText)findViewById(R.id.search_edit);
-        search_edit.addTextChangedListener(searchTextWatcher);
-
-
-        //ListView控件
-        ListView mlistView = (ListView) findViewById(R.id.list_view);
-        adapter = new ArrayAdapter<String>(
-                SelectCityActivity.this, android.R.layout.simple_list_item_1, data//data数据数据将在listview列表中显示
-        );
-        mlistView.setAdapter(adapter);
-
-
-
-
-
-        //遍历城市列表，并将其添加到data数据（在listview中显示）
-        Iterator it = city_list.iterator();
-        while (it.hasNext()) {
-            city = (City) it.next();
-            //其中key为城市名称,value为城市编码
-            hm.put(city.getCity(),city.getNumber());
-            //将城市名称，添加到数组（用于在listView中显示）
-            data.add(city.getCity());
-
-        }
-
-
-        //为ListView表项添加单击事件
-        mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            //列表项为城市名称，单击城市名称，返回城市名称，并用取出对应城市编号，去网络更新该城市天气信息
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                String s_city_name = data.get(i);
-
-                //显示被匹配的城市列表时
-                if(isMatchMode){
-                    s_city_name = dataMatch.get(i);
-                }
-
-                //单击内容测试 - 可删除
-                Toast.makeText(SelectCityActivity.this, "选中城市：" + s_city_name, Toast.LENGTH_SHORT).show();
-                //设置标题为当前城市
-                selectCityName.setText("当前选择城市：" + s_city_name);
-
-                //通过城市名称取出城市编码
-                //取出的城市编码为Object类型，需要转换
-                String select_city_code = hm.get(s_city_name).toString();
-
-                //测试选中的城市的名称和编码--可删除
-                Log.d(TAG,"选中的城市名称和编码：" + s_city_name + " "+ select_city_code);
-
-
-                //选中城市后，将城市编码回传给TodayWeatherActivity,会用finish结束当前活动生命周期
-                Intent i2 = new Intent();
-                i2.putExtra("select_city_code",select_city_code);
-                setResult(1,i2);
-
-                finish();
+            public void afterTextChanged(Editable s) {
 
             }
         });
 
-
     }
+    //继承OnItemClickListener，当子项目被点击的时候触发
+    private final class ItemClickEvent implements AdapterView.OnItemClickListener {
 
+        //将选择的城市编码，传给主界面
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-    //搜索包含inputStr记录，并将匹配结果显示到listview
-    public void matchCity(String inputStr){
+            HashMap<String,Object> city = (HashMap<String,Object>)mListView.getItemAtPosition(position);
+            String select_city_code=city.get("cityCode").toString();
+            Log.d("选择的城市编码：",select_city_code);
+            Intent i2 = new Intent();
+            i2.putExtra("select_city_code",select_city_code);
+            setResult(1,i2);
 
-        boolean isMatch;
-
-
-        //ListView控件
-        ListView mlistView = (ListView) findViewById(R.id.list_view);
-        adapter = new ArrayAdapter<String>(
-                SelectCityActivity.this, android.R.layout.simple_list_item_1, dataMatch//data数据数据将在listview列表中显示
-        );
-        mlistView.setAdapter(adapter);
-
-        //遍历城市列表，判断记录中是否含inputStr,并将符合的记录添加到data数据（在listview中显示）
-        Iterator it = city_list.iterator();
-        while (it.hasNext()) {
-            city = (City) it.next();
-            isMatch = city.getCity().equals(inputStr);
-            if(isMatch) {
-                hmMatch.put(city.getCity(),city.getNumber());
-                dataMatch.add(city.getCity());//将城市名称，添加到数组（用于在listView中显示）
-                Log.d("match", "match方法相匹配的城市：" + city.getCity());
-            }
+            finish();
 
         }
-        adapter.notifyDataSetChanged();
-
-
     }
 
+    //列表显示的内容
+    private List<Map<String, Object>> getdata() {
+        myList= new ArrayList<City>();
+        //获取全部城市列表（从数据库中）
+        MyApplication myApplication = MyApplication.getInstance();
+        myList = myApplication.getmCityList();
 
+        String []cityName=new String[myList.size()];
+        String []cityCode=new String[myList.size()];
+        int i=0;
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+        for(City city : myList) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            cityName[i] = city.getCity();
+            cityCode[i] = city.getNumber();
+            map.put("cityName",cityName[i]);
+            map.put("cityCode",cityCode[i]);
+            list.add(map);
+            i++;
+        }
+        return list;
+    }
 
 
 

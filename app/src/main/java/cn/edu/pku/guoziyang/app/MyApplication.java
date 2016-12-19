@@ -63,7 +63,11 @@ public class MyApplication extends Application {
             i++;
             String cityName = city.getCity();
             String cityCode = city.getNumber();
-            Log.d(TAG,cityCode+":"+cityName);
+            String allpy = city.getAllPY();
+            String allfirstpy = city.getAllFirstPY();
+            String firstpy = city.getFirstPV();
+
+            Log.d(TAG,city.toString());
         }
         Log.d(TAG,"i="+i);
         return true;
