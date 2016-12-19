@@ -13,8 +13,14 @@ public class TodayWeather {
     private String fengxiang;
     private String fengli;
     private String date;
+    //今日明日后日最高最低温度
     private String high;
+    private String high2;
+    private String high3;
     private String low;
+    private String low2;
+    private String low3;
+
     private String type;
 
 
@@ -66,6 +72,38 @@ public class TodayWeather {
 
     public String getType() {
         return type;
+    }
+
+    public String getHigh2() {
+        return high2;
+    }
+
+    public void setHigh2(String high2) {
+        this.high2 = high2;
+    }
+
+    public String getHigh3() {
+        return high3;
+    }
+
+    public void setHigh3(String high3) {
+        this.high3 = high3;
+    }
+
+    public String getLow2() {
+        return low2;
+    }
+
+    public void setLow2(String low2) {
+        this.low2 = low2;
+    }
+
+    public String getLow3() {
+        return low3;
+    }
+
+    public void setLow3(String low3) {
+        this.low3 = low3;
     }
 
     //set方法

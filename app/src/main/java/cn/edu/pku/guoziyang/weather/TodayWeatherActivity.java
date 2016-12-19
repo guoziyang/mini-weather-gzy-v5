@@ -1,8 +1,11 @@
 package cn.edu.pku.guoziyang.weather;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -32,7 +35,7 @@ import cn.edu.pku.guoziyang.util.NetUtil;
 public class TodayWeatherActivity extends Activity {
 
     //Log信息标签
-    private String TAG = "mini-weather";
+    private String TAG = "myWeather";
 
     //按钮
     private ImageView mUpdateBtn;//信息更新按钮
@@ -45,6 +48,9 @@ public class TodayWeatherActivity extends Activity {
     //近三日天气信息
     private TextView temperatureTv1,temperatureTv2,temperatureTv3;
 
+    //城市编码
+    String cityCode,currentCityCode,selectCityCode;
+
 
 
     @Override
@@ -53,18 +59,15 @@ public class TodayWeatherActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_today);//关联布局
 
-
-        //检测是否连接到网络
-        checkNetworkState();
-
         //选择城市按钮
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(TodayWeatherActivity.this,
-                        "点击城市管理按钮！ ",
-                        Toast.LENGTH_SHORT).show();
+                //为城市管理按钮添加意图,实现功能:点击后跳转到selectCity页面
+                Intent i = new Intent(TodayWeatherActivity.this,SelectCityActivity.class);
+                startActivityForResult(i,1);
+                Toast.makeText(TodayWeatherActivity.this, "点击城市管理按钮！ ", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -74,20 +77,13 @@ public class TodayWeatherActivity extends Activity {
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //存储从网络获取的天气信息
-                SharedPreferences sharedPreferences = getSharedPreferences("today_weather", 0);
-                //城市编码，默认为北京,需要将给定城市名称city转为城市代码city_code（之后在添加数据库中实现）
-                String city_code_save = sharedPreferences.getString("city_code_save", "101010100");
-                System.out.println(city_code_save);
-                //从网络获取天气信息
-                queryWeatherCode(city_code_save);
-                //显示到UI
-                updateTodayWeather();
+                //更新天气信息
+                preUpdateWeather();
                 //提示更新成功
                 Toast.makeText(TodayWeatherActivity.this,"更新成功!",Toast.LENGTH_SHORT).show();
             }
         });
-        //初始化控件
+        //初始化UI控件
         initView();
     }
 
@@ -119,36 +115,71 @@ public class TodayWeatherActivity extends Activity {
         temperatureTv2 = (TextView) findViewById(R.id.weather02);//明日
         temperatureTv3 = (TextView) findViewById(R.id.weather03);//后日
 
-        //读取从网络获取的天气信息
-        SharedPreferences sharedPreferences = getSharedPreferences("today_weather", 0);
-        //城市编码，默认为北京,需要将给定城市名称city转为城市代码city_code（之后在添加数据库中实现）
-        String city_code_save = sharedPreferences.getString("city_code_save", "101010100");
-        updateTodayWeather();
+        //获取默认保存的天气信息
+        preUpdateWeather();
 
     }
 
-    //检测是否连接到网络
-    protected void checkNetworkState(){
+    //更新默认选择城市的天气信息
+    protected void preUpdateWeather(){
+
+        Log.d(TAG,"preudateweather()");
+
+        //config文件的cityCode中保存用户选择的城市编码
+        SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+        //默认城市代码为北京
+        cityCode=sharedPreferences.getString("cityCode","101010100");
+
         if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
             Log.d(TAG, "网络OK" );
-            Toast.makeText(TodayWeatherActivity.this, "网络OK!", Toast.LENGTH_LONG).show();
-            //更新天气信息，不需要提示网络连接成功
+            //更新天气信息
+            queryWeatherCode(cityCode);
+
         } else {
             Log.d(TAG, "网络挂了");
             Toast.makeText(TodayWeatherActivity.this, "网络连接失败，请检查网络!", Toast.LENGTH_LONG).show();
+            //初始化UI
+            city_name_Tv.setText("N/A");
+            wenduTv.setText("N/A");
+            timeTv.setText("N/A");
+            pmDataTv.setText("N/A");
+            pmQualityTv.setText("N/A");
+            weekTv.setText("N/A");
+            climateTv.setText("N/A");
+            temperatureTv1.setText("--");
+            temperatureTv2.setText("--");
+            temperatureTv3.setText("--");
         }
     }
 
 
+
+
+    //更新UI控件
+    private static final int UPDATE_TODAY_WEATHER = 1;
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg){
+            switch (msg.what){
+                case UPDATE_TODAY_WEATHER:
+                    updateTodayWeather((TodayWeather)msg.obj);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+
     /**
      * 从网络获取城市编码为cityCode的城市的天气信息
-     * 并将其存入Sharepreference的today_weather文件中
      * @param cityCode 城市编码（默认北京101010100）
      */
     private void queryWeatherCode(String cityCode) {
         //http://wthrcdn.etouch.cn/WeatherApi?citykey=101010100
         final String address = "http://wthrcdn.etouch.cn/WeatherApi?citykey=" + cityCode;
         Log.d(TAG, "XML文件网络访问URL：" + address);
+        Log.d("update", "queryWeatherCode中参数citycode=：" + cityCode);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -172,7 +203,15 @@ public class TodayWeatherActivity extends Activity {
                     String responseStr = response.toString();
                     //调用解析函数,解析获取到的网络数据
                     //responseStr获取的网络数据结果
-                    parseXML(responseStr);
+                    todayWeather = parseXML(responseStr);
+
+                    //将获取的天气信息传递给UI
+                    if(todayWeather != null){
+                        Message msg= new Message();
+                        msg.what=UPDATE_TODAY_WEATHER;
+                        msg.obj=todayWeather;
+                        mHandler.sendMessage(msg);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -187,17 +226,16 @@ public class TodayWeatherActivity extends Activity {
     }
 
 
-
     /**
      *
-     * 解析从网络获取的XML数据文件（天气信息），并将获取信息存入sharepreferce的today_weather文件
-     *
+     * 解析从网络获取的XML数据文件（天气信息），并将获取的天气信息存入TodayWeather对象
      * 返回TodayWeather对象
      *
      * @param xmldata xml文件内容
      */
-    private void parseXML(String xmldata) {
+    private TodayWeather  parseXML(String xmldata) {
 
+        //保存更新的天气信息
         TodayWeather todayWeather = null;
 
         int fengxiangCount = 0;
@@ -215,11 +253,6 @@ public class TodayWeatherActivity extends Activity {
             xmlPullParser.setInput(new StringReader(xmldata));
             int eventType = xmlPullParser.getEventType();
 
-            //sharePreferences存入数据到today_weather
-            //将从网络获取的今日天气信息存入today_weather文件
-            SharedPreferences setting = getApplicationContext().getSharedPreferences("today_weather",0);
-            SharedPreferences.Editor editor = setting.edit();
-
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 switch (eventType) {
                     //判断当前事件是否为文档开始事件
@@ -227,139 +260,142 @@ public class TodayWeatherActivity extends Activity {
                         break;
                     //判断当前事件是否为标签元素开始事件
                     case XmlPullParser.START_TAG:
-                        //????
                         if(xmlPullParser.getName().equals("resp")){
+                            todayWeather = new TodayWeather();
                         }
                         if (todayWeather != null) {
                             //city即xml文件中的city标签
-                            if (xmlPullParser.getName().equals("city")) {//城市
+                            if (xmlPullParser.getName().equals("city")) {//城市名称
                                 //进入下一个元素,并触发相应事件
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("city",temp);//存入后，最后需要commit提交
+                                todayWeather.setCity(temp);
                             } else if (xmlPullParser.getName().equals("updatetime")) {//更新时间
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("updatetime",temp);//存入sharepreferce
-                                // Log.d("myWeather", "updatetime:    " + xmlPullParser.getText());
+                                todayWeather.setUpdatetime(temp);
                             } else if (xmlPullParser.getName().equals("shidu")) {//湿度
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("shidu",temp);
+                                todayWeather.setShidu(temp);
                             } else if (xmlPullParser.getName().equals("wendu")) {//实时温度
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("wendu",temp);
-                                // Log.d("myWeather", "wendu:    " + xmlPullParser.getText());
+                                todayWeather.setWendu(temp);
                             } else if (xmlPullParser.getName().equals("pm25")) {//pm2.5数值
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("pm25",temp);
+                                todayWeather.setPm25(temp);
                             } else if (xmlPullParser.getName().equals("quality")) {//空气质量
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("quality",temp);
+                                todayWeather.setQuality(temp);
                             } else if (xmlPullParser.getName().equals("fengxiang") && fengxiangCount == 0) {//风向
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("fengxiang",temp);
+                                todayWeather.setFengxiang(temp);
                                 fengxiangCount++;
                             } else if (xmlPullParser.getName().equals("fengli") && fengliCount == 0) {//
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("fengli",temp);
+                                todayWeather.setFengli(temp);
                                 fengliCount++;
-
                             } else if (xmlPullParser.getName().equals("date") && dateCount == 0) {
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("date",temp);
+                                todayWeather.setDate(temp);
                                 dateCount++;
                             } else if (xmlPullParser.getName().equals("high") && highCount == 0) {//今日最高温度
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("hign",temp.substring(2).trim());
+                                todayWeather.setHigh(temp.substring(2).trim());
+                                Log.d("myapp", "high:" + xmlPullParser.getText());
                                 highCount++;
                             } else if (xmlPullParser.getName().equals("low") && lowCount == 0) {
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("low",temp.substring(2).trim());
+                                todayWeather.setLow(temp.substring(2).trim());
                                 lowCount++;
                             }else if (xmlPullParser.getName().equals("high") && highCount == 1) {//明日最高温度
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("hign2",temp.substring(2).trim());
+                                todayWeather.setHigh2(temp.substring(2).trim());
                                 highCount++;
                             }else if (xmlPullParser.getName().equals("low") && lowCount == 1) {//明日最低温度
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("low2",temp.substring(2).trim());
+                                todayWeather.setLow2(temp.substring(2).trim());
                                 lowCount++;
                             } else if (xmlPullParser.getName().equals("high") && highCount == 2) {//后日最高温度
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("hign3",temp.substring(2).trim());
+                                todayWeather.setHigh3(temp.substring(2).trim());
                                 highCount++;
                             }else if (xmlPullParser.getName().equals("low") && lowCount == 2) {//后日最低温度
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("low3",temp.substring(2).trim());
+                                todayWeather.setLow3(temp.substring(2).trim());
                                 lowCount++;
                             } else if (xmlPullParser.getName().equals("type") && typeCount == 0) {
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
-                                editor.putString("type",temp);
+                                todayWeather.setType(temp);
                                 typeCount++;
                             }
                         }
-
                         break;
                     //判断当前事件是否为标签元素结束事件
                     case XmlPullParser.END_TAG:
                         break;
-
                 }
                 //进入下一个元素并触发相应事件
                 eventType = xmlPullParser.next();
             }
-            editor.commit();//全部存入sharepreference后提交
+
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        //测试是否获取到天气--可删除
+        if(todayWeather == null){
+            Log.d(TAG,"todayWeather未存入");
+        }else {
+            Log.d(TAG,todayWeather.toString());
+        }
+
+        return todayWeather;
     }
 
 
     /**
-     * UI中的控件中显示获取的天气信息
+     * 更新天气信息到UI控件（从todayweather）
      *
      */
-    void updateTodayWeather(){
+    void updateTodayWeather(TodayWeather todayWeather){
         //更新数据到控件
         String city_name,wendu,time,pmData,pmQuality,week,climate;
         String low,low2,low3,hign,hign2,hign3;
 
         //获取更新的数据（从Sharepreference中获取）
-        SharedPreferences sharedPreferences = getSharedPreferences("today_weather",0);
-        city_name = sharedPreferences.getString("city","N/A");
-        wendu = sharedPreferences.getString("wendu","N/A");
-        time = sharedPreferences.getString("updatetime","N/A");
-        pmData = sharedPreferences.getString("pm25","N/A");
-        pmQuality = sharedPreferences.getString("quality","N/A");
-        week = sharedPreferences.getString("date","N/A");
-        climate = sharedPreferences.getString("type","N/A");
+        city_name = todayWeather.getCity();
+        wendu = todayWeather.getWendu();
+        time = todayWeather.getUpdatetime();
+        pmData = todayWeather.getPm25();
+        pmQuality = todayWeather.getQuality();
+        week = todayWeather.getDate();
+        climate = todayWeather.getType();
 
         //今日
-        hign = sharedPreferences.getString("hign", "--");
-        low = sharedPreferences.getString("low", "--");
+        hign = todayWeather.getHigh();
+        low = todayWeather.getLow();
         //明日
-        hign2 = sharedPreferences.getString("hign2", "--");
-        low2 = sharedPreferences.getString("low2", "--");
+        hign2 = todayWeather.getHigh2();
+        low2 = todayWeather.getLow2();
         //后日
-        hign3 = sharedPreferences.getString("hign3", "--");
-        low3 = sharedPreferences.getString("low3", "--");
+        hign3 = todayWeather.getHigh3();
+        low3 = todayWeather.getLow3();
 
 
         //显示到控件显示
@@ -376,5 +412,30 @@ public class TodayWeatherActivity extends Activity {
         temperatureTv2.setText(low2 + "~" + hign2);
         temperatureTv3.setText(low3 + "~" + hign3);
 
+    }
+
+
+    //选择城市后，将该城市的编码回传
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG,"TodayWeatherActivity----------------->onActivityResult方法");
+        if(requestCode==1&&resultCode==1){
+            //获取用户选择的城市编码
+            String select_city_code = data.getStringExtra("select_city_code");
+            Log.d(TAG,"接收到的选择城市编码----------------->："+ select_city_code);
+
+            //将用户选择的城市编码保存，用于下次访问自动更新天气信息
+            SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+            SharedPreferences.Editor editor=sharedPreferences.edit();
+            editor.putString("cityCode",select_city_code);
+            editor.commit();
+
+            //更新天气
+            preUpdateWeather();
+
+            //提示更新成功
+            Toast.makeText(TodayWeatherActivity.this,"更新成功!",Toast.LENGTH_SHORT).show();
+
+        }
     }
 }
