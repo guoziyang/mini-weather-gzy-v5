@@ -3,6 +3,7 @@ package cn.edu.pku.guoziyang.weather;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,11 +24,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import cn.edu.pku.guoziyang.bean.TodayWeather;
 import cn.edu.pku.guoziyang.util.NetUtil;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.lang.reflect.Field;
+import java.util.zip.GZIPInputStream;
+
+import cn.edu.pku.guoziyang.util.PinYin;
+
 
 /**
  * 今日天气信息界面
@@ -43,10 +56,13 @@ public class TodayWeatherActivity extends Activity {
 
     //今日天气详细信息
     private TextView cityTv, wenduTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windOTv, windTv, city_name_Tv;
-    private ImageView weatherImg, pmImg;
+    private ImageView weatherImg,weatherImg2,weatherImg3, pmImg;
+    private RelativeLayout relativeLayout;
 
     //近三日天气信息
-    private TextView temperatureTv1,temperatureTv2,temperatureTv3;
+    private TextView temperatureTv1,temperatureTv2,temperatureTv3;//最高气温最低气温
+    private TextView typeTv,type2Tv,type3Tv;//天气状况，如，今日 晴
+
 
     //城市编码
     String cityCode,currentCityCode,selectCityCode;
@@ -109,13 +125,21 @@ public class TodayWeatherActivity extends Activity {
         //天气状况,例,晴
         climateTv = (TextView) findViewById(R.id.type);
         //天气状况图片(未来3天中的今日)
-        weatherImg = (ImageView) findViewById(R.id.weather01_pic);
+        weatherImg = (ImageView) findViewById(R.id.weather01_pic);//今日
+        weatherImg2 = (ImageView) findViewById(R.id.weather02_pic);//明日
+        weatherImg3 = (ImageView) findViewById(R.id.weather03_pic);//后日
 
+        relativeLayout =  (RelativeLayout)findViewById(R.id.bg_weather_today);
 
         //温度范围(未来3天中的今日)
         temperatureTv1 = (TextView) findViewById(R.id.weather01);//今日
         temperatureTv2 = (TextView) findViewById(R.id.weather02);//明日
         temperatureTv3 = (TextView) findViewById(R.id.weather03);//后日
+
+        //近3天天气状况，如，今日 晴
+        typeTv = (TextView) findViewById(R.id.weather01_tips);//今日
+        type2Tv = (TextView) findViewById(R.id.weather02_tips);//明日
+        type3Tv = (TextView) findViewById(R.id.weather03_tips);//后日
 
         //获取默认保存的天气信息
         preUpdateWeather();
@@ -288,6 +312,10 @@ public class TodayWeatherActivity extends Activity {
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
                                 todayWeather.setPm25(temp);
+                            } else if (xmlPullParser.getName().equals("aqi")) {//空气污染指数aqi
+                                eventType = xmlPullParser.next();
+                                temp = xmlPullParser.getText();
+                                todayWeather.setAqi(temp);
                             } else if (xmlPullParser.getName().equals("quality")) {//空气质量
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
@@ -338,10 +366,20 @@ public class TodayWeatherActivity extends Activity {
                                 temp = xmlPullParser.getText();
                                 todayWeather.setLow3(temp.substring(2).trim());
                                 lowCount++;
-                            } else if (xmlPullParser.getName().equals("type") && typeCount == 0) {
+                            } else if (xmlPullParser.getName().equals("type") && typeCount == 0) {//今日天气状况
                                 eventType = xmlPullParser.next();
                                 temp = xmlPullParser.getText();
                                 todayWeather.setType(temp);
+                                typeCount++;
+                            } else if (xmlPullParser.getName().equals("type") && typeCount == 1) {//明日天气状况
+                                eventType = xmlPullParser.next();
+                                temp = xmlPullParser.getText();
+                                todayWeather.setType2(temp);
+                                typeCount++;
+                            } else if (xmlPullParser.getName().equals("type") && typeCount == 2) {//后日天气状况
+                                eventType = xmlPullParser.next();
+                                temp = xmlPullParser.getText();
+                                todayWeather.setType3(temp);
                                 typeCount++;
                             }
                         }
@@ -386,25 +424,26 @@ public class TodayWeatherActivity extends Activity {
             currentCityCode = selectCityCode;
 
             //更新数据到控件
-            String city_name, wendu, time, pmData, pmQuality, week, climate;
+            String city_name, wendu, time, pmData, pmQuality, week;
             String low, low2, low3, hign, hign2, hign3;
+            //天气状况，今日，明日，后日
+            String climate,climate2,climate3;
 
             //获取更新的数据（从Sharepreference中获取）
             city_name = todayWeather.getCity();
             wendu = todayWeather.getWendu();
             time = todayWeather.getUpdatetime();
             pmData = todayWeather.getPm25();
-            if(pmData==null){
-                SharedPreferences sharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-                //获取上级城市名称
-                String province =sharedPreferences.getString("province","");
-                //获取上级城市编码（方法：通过城市名称查询城市编码）
-                //获取上级城市pm2.5数据
 
-            }
             pmQuality = todayWeather.getQuality();
             week = todayWeather.getDate();
+
+
+            //近3日天气状况
             climate = todayWeather.getType();
+            climate2 = todayWeather.getType2();
+            climate3 = todayWeather.getType3();
+
 
             //今日
             hign = todayWeather.getHigh();
@@ -426,10 +465,94 @@ public class TodayWeatherActivity extends Activity {
             weekTv.setText(week);
             climateTv.setText(climate);
 
-            //近三日天气
+
+            //根据aqi不同，显示不同图标（aqi为空气污染指数）
+            //当前城市无pm数据时，不显示PM2.5图标
+            if(pmData==null){
+                pmImg.setVisibility(View.INVISIBLE);
+            }else{
+                pmImg.setVisibility(View.VISIBLE);
+                int pmValue = Integer.parseInt(pmData.trim());
+                int aqiValue = Integer.parseInt(todayWeather.getAqi().trim());
+                //新pm2.5图片id
+                int pmImgId = -1;
+                if(aqiValue <= 50){//aqi 0~50 空气质量状况属于优
+                    pmImgId = R.drawable.city_weather_pm25_green;
+                }else if (aqiValue > 50 && aqiValue < 101) {//aqi 50~100空气质量状况属于良
+                    pmImgId = R.drawable.city_weather_pm25_yellow;
+                }else if (aqiValue >= 101 && aqiValue < 151) {//aqi 101~150空气质量状况属于轻度污染
+                    pmImgId = R.drawable.city_weather_pm25_orange;
+                } else if (aqiValue >= 151 && aqiValue < 201) {//aqi 151~200空气质量状况属于中度污染
+                    pmImgId = R.drawable.city_weather_pm25_purple;
+                } else if (aqiValue >= 201 && aqiValue < 301) {//aqi 201~300空气质量状况属于重度污染
+                    pmImgId = R.drawable.city_weather_pm25_brown;
+                } else if (aqiValue >= 301) {//aqi 大于300 空气质量状况属于严重污染
+                    pmImgId = R.drawable.city_weather_pm25_red;
+                }
+                //显示更改的图片
+                Drawable drawablePm25Img = getResources().getDrawable(pmImgId);
+                pmImg.setImageDrawable(drawablePm25Img);
+            }
+            //根据天气状况显示不同背景（用文字反射拼音）
+            String typeBgImg = "bg_day_" + PinYin.converterToSpell(todayWeather.getType());
+            Class aClass = R.drawable.class;
+            int typeBgId = -1;
+            try {
+                Field field = aClass.getField(typeBgImg);
+                Object value = field.get(new Integer(0));
+                typeBgId = (int) value;
+            } catch (Exception e) {
+                if (-1 == typeBgId)
+                    typeBgId = R.drawable.bg_day_qing;
+            } finally {
+                Drawable drawable = getResources().getDrawable(typeBgId);
+                relativeLayout.setBackground(drawable);
+            }
+
+            //更新近三日天气的最低最高温度
             temperatureTv1.setText(low + "~" + hign);
             temperatureTv2.setText(low2 + "~" + hign2);
             temperatureTv3.setText(low3 + "~" + hign3);
+            //更新近三日天气的天气状况，如，今日 晴
+            typeTv.setText("今日 " + todayWeather.getType());
+            type2Tv.setText("明日 " + todayWeather.getType2());
+            type3Tv.setText("后日 " + todayWeather.getType3());
+
+            //根据天气状况设置近3天的天气图标(用文字反射拼音)
+            String typeImg = "weather_icon_day_" + PinYin.converterToSpell(todayWeather.getType());
+            String type2Img = "weather_icon_day_" + PinYin.converterToSpell(todayWeather.getType2());
+            String type3Img = "weather_icon_day_" + PinYin.converterToSpell(todayWeather.getType3());
+            Class bClass = R.drawable.class;
+            int typeId = -1;
+            int type2Id = -1;
+            int type3Id = -1;
+            try {
+                Field field = aClass.getField(typeImg);
+                Object value = field.get(new Integer(0));
+                typeId = (int) value;
+                Field field2 = aClass.getField(type2Img);
+                Object value2 = field2.get(new Integer(0));
+                type2Id = (int) value2;
+                Field field3 = aClass.getField(type3Img);
+                Object value3 = field3.get(new Integer(0));
+                type3Id = (int) value3;
+            } catch (Exception e) {
+                if (-1 == typeId & -1 == type2Id & -1 == type3Id)
+                    typeId = R.drawable.weather_icon_day_qing;
+                type2Id = R.drawable.weather_icon_day_qing;
+                type3Id = R.drawable.weather_icon_day_qing;
+            } finally {
+                //weatherImg为今日天气情况的图标
+                Drawable drawableTypeImg = getResources().getDrawable(typeId);
+                weatherImg.setImageDrawable(drawableTypeImg);
+                //weatherImg为明日天气情况的图标
+                Drawable drawableTypeImg2 = getResources().getDrawable(type2Id);
+                weatherImg2.setImageDrawable(drawableTypeImg2);
+                //weatherImg为后日天气情况的图标
+                Drawable drawableTypeImg3 = getResources().getDrawable(type3Id);
+                weatherImg3.setImageDrawable(drawableTypeImg3);
+            }
+
         }
     }
 
@@ -440,7 +563,6 @@ public class TodayWeatherActivity extends Activity {
         if(requestCode==1&&resultCode==1){
             //获取用户选择的城市编码
             String select_city_code = data.getStringExtra("select_city_code");
-            String select_city_province = data.getStringExtra("select_city_province");
             Log.d(TAG,"接收到的选择城市编码----------------->："+ select_city_code);
 
             //将用户选择的城市编码保存，用于下次访问自动更新天气信息

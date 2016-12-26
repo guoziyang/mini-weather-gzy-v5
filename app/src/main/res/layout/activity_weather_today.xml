@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bg_weather_today"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_snow">
+    android:background="@drawable/bg_day_qing">
 
     <!--今日天气信息-->
     <RelativeLayout
@@ -128,7 +129,7 @@
             android:layout_below="@id/date_pic"
             android:paddingLeft="48dp"
             android:paddingTop="10dp"
-            android:src="@drawable/air_icon_5" />
+            android:src="@drawable/city_weather_pm25_green" />
         <!--pm2.5图标背景颜色，污染等级不同颜色不同-->
 
 
@@ -139,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/pm2_5_img"
             android:layout_below="@id/date_pic"
-            android:paddingLeft="8dp"
+            android:paddingLeft="3dp"
             android:paddingTop="10dp"
             android:text="409"
             android:textColor="@android:color/white"
@@ -181,29 +182,30 @@
             android:textSize="15sp"
             android:textColor="#cfffffff"
             android:layout_alignParentBottom="true" />
-
         <!--今日-->
         <TextView
             android:id="@+id/weather01_tips"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/weather01"
-            android:paddingLeft="50dp"
+            android:paddingLeft="45dp"
             android:paddingBottom="5dp"
-            android:text="@string/fulture_weather01"
-            android:textSize="15sp"
+            android:text="今日 小雪"
+            android:textSize="12sp"
             android:textColor="#cfffffff"
             />
 
-        <!--天气图标-->
+
+
+        <!--今日天气图标-->
         <ImageView
             android:id="@+id/weather01_pic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/weather01_tips"
-            android:paddingLeft="45dp"
+            android:paddingLeft="55dp"
             android:paddingBottom="10dp"
-            android:src="@drawable/sun"/>
+            android:src="@drawable/weather_icon_day_qing"/>
 
         <!--明日-->
         <!--最低~最高温度-->
@@ -217,7 +219,7 @@
             android:textSize="15sp"
             android:textColor="#cfffffff"
             android:layout_centerHorizontal="true" />
-        <!--明日-->
+        <!--明日天气状况-->
         <TextView
             android:id="@+id/weather02_tips"
             android:layout_width="wrap_content"
@@ -225,11 +227,11 @@
             android:layout_above="@id/weather02"
             android:layout_centerHorizontal="true"
             android:paddingBottom="5dp"
-            android:text="@string/fulture_weather02"
-            android:textSize="15sp"
+            android:text= "明日 晴"
+            android:textSize="12sp"
             android:textColor="#cfffffff"
             />
-        <!--天气图标-->
+        <!--明日天气图标-->
         <ImageView
             android:id="@+id/weather02_pic"
             android:layout_width="wrap_content"
@@ -237,7 +239,7 @@
             android:layout_above="@id/weather02_tips"
             android:layout_centerHorizontal="true"
             android:paddingBottom="10dp"
-            android:src="@drawable/could"/>
+            android:src="@drawable/weather_icon_day_duoyun"/>
 
         <!--后日-->
         <!--最低~最高温度-->
@@ -253,30 +255,30 @@
             android:paddingRight="35dp"
             android:layout_alignParentRight="true" />
 
-        <!--后日-->
+        <!--后日天气状况-->
         <TextView
             android:id="@+id/weather03_tips"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/weather03"
             android:paddingBottom="5dp"
-            android:text="@string/fulture_weather03"
-            android:textSize="15sp"
+            android:text= "后日 晴"
+            android:textSize="12sp"
             android:textColor="#cfffffff"
             android:paddingRight="50dp"
             android:layout_alignParentRight="true"
             />
 
-        <!--天气图标-->
+        <!--后日天气图标-->
         <ImageView
             android:id="@+id/weather03_pic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/weather02_tips"
-            android:paddingRight="43dp"
+            android:paddingRight="60dp"
             android:layout_alignParentRight="true"
             android:paddingBottom="5dp"
-            android:src="@drawable/snow"/>
+            android:src="@drawable/weather_icon_day_qing"/>
     </RelativeLayout>
 
 
