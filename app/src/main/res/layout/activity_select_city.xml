@@ -18,7 +18,10 @@
             android:gravity="center"
             android:text="当前城市：北京"
             android:textColor="#d7fcfafa"
-            android:textSize="20.0dip"/>
+            android:textSize="20.0dip"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
         <!--返回按钮-->
         <ImageView
             android:id="@+id/title_back"
@@ -27,7 +30,6 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:src="@drawable/base_action_bar_back_normal"/>
-
     </RelativeLayout>
 
     <EditText
@@ -53,7 +55,216 @@
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/search_edit">
+        android:layout_height="310dp"
+        android:scrollbars="vertical"
+        android:scrollbarSize="13dp"
+        android:scrollbarThumbVertical="@color/colorPrimary"
+        android:fadeScrollbars="true"
+        android:layout_below="@+id/search_edit"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
     </ListView>
+
+    <!--热门城市标题-->
+    <TextView
+        android:id="@+id/c_city_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/list_view"
+        android:text="热门城市"
+        android:textSize="15sp"
+        android:textColor="#ff000000"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="20dp"/>
+
+    <!--热门城市-->
+    <GridLayout
+        android:layout_below="@id/c_city_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        >
+        <!--第一排-->
+        <Button
+            android:id="@+id/btn_city_00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      定位      "
+            android:textSize="15sp"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            />
+        <!--定位图标-->
+        <ImageView
+            android:id="@+id/btn_city_00_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:paddingTop="3dp"
+            android:src="@drawable/img_location_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            />
+
+        <Button
+            android:id="@+id/btn_city_01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      北京      "
+            android:textSize="15sp"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            />
+
+        <Button
+            android:id="@+id/btn_city_02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      上海      "
+            android:textSize="15sp"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            />
+        <Button
+            android:id="@+id/btn_city_03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      广州      "
+            android:textSize="15sp"
+            android:layout_row="0"
+            android:layout_column="3"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            />
+
+        <!--第二排-->
+        <Button
+            android:id="@+id/btn_city_10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      深圳      "
+            android:textSize="15sp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            />
+
+        <Button
+            android:id="@+id/btn_city_11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      天津      "
+            android:textSize="15sp"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            />
+        <Button
+            android:id="@+id/btn_city_12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      武汉      "
+            android:textSize="15sp"
+            android:layout_row="1"
+            android:layout_column="2"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            />
+        <Button
+            android:id="@+id/btn_city_13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      兰州      "
+            android:textSize="15sp"
+            android:layout_row="1"
+            android:layout_column="3"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            />
+
+        <!--第三排-->
+        <Button
+            android:id="@+id/btn_city_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      长沙      "
+            android:textSize="15sp"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            />
+
+        <Button
+            android:id="@+id/btn_city_21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="      大理      "
+            android:textSize="15sp"
+            android:layout_row="2"
+            android:layout_column="1"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            />
+        <Button
+            android:id="@+id/btn_city_22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="    石家庄    "
+            android:textSize="15sp"
+            android:layout_row="2"
+            android:layout_column="2"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            />
+        <Button
+            android:id="@+id/btn_city_23"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="    哈尔滨    "
+            android:textSize="15sp"
+            android:layout_row="2"
+            android:layout_column="3"
+            android:background="@drawable/btn_bg"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_marginTop="10dp"
+            />
+
+
+
+
+    </GridLayout>
+
+
+
+
 </RelativeLayout>

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -58,6 +59,9 @@ public class SelectCityActivity extends Activity{
     private EditText eSearch;
     private SimpleAdapter adapter;
 
+    //热门城市按钮
+    private Button btn_city_00,btn_city_01,btn_city_02,btn_city_03,btn_city_10,btn_city_11,btn_city_12,btn_city_13,btn_city_20,btn_city_21,btn_city_22,btn_city_23;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_city);
@@ -82,6 +86,104 @@ public class SelectCityActivity extends Activity{
             }
         });
 
+        //热门城市
+        btn_city_00 = (Button) findViewById(R.id.btn_city_00);
+        btn_city_00.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //定位当前城市
+            }
+        });
+        //北京101010100
+        btn_city_01 = (Button) findViewById(R.id.btn_city_01);
+        btn_city_01.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101010100");
+            }
+        });
+        //上海101020100
+        btn_city_02 = (Button) findViewById(R.id.btn_city_02);
+        btn_city_02.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101020100");
+            }
+        });
+        //广州101280101
+        btn_city_03 = (Button) findViewById(R.id.btn_city_03);
+        btn_city_03.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101280101");
+            }
+        });
+        //深圳101280601
+        btn_city_10 = (Button) findViewById(R.id.btn_city_10);
+        btn_city_10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101280601");
+            }
+        });
+        //天津101030100
+        btn_city_11 = (Button) findViewById(R.id.btn_city_11);
+        btn_city_11.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101030100");
+            }
+        });
+        //武汉101200101
+        btn_city_12 = (Button) findViewById(R.id.btn_city_12);
+        btn_city_12.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101200101");
+            }
+        });
+        //兰州101160101
+        btn_city_13 = (Button) findViewById(R.id.btn_city_13);
+        btn_city_13.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101160101");
+            }
+        });
+
+        //长沙101250101
+        btn_city_20 = (Button) findViewById(R.id.btn_city_20);
+        btn_city_20.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101250101");
+            }
+        });
+        //大理101290201
+        btn_city_21 = (Button) findViewById(R.id.btn_city_21);
+        btn_city_21.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101290201");
+            }
+        });
+        //石家庄101090101
+        btn_city_22 = (Button) findViewById(R.id.btn_city_22);
+        btn_city_22.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101090101");
+            }
+        });
+        //哈尔滨101050101
+        btn_city_23 = (Button) findViewById(R.id.btn_city_23);
+        btn_city_23.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back("101050101");
+            }
+        });
+
         //显示城市列表
         mListView = (ListView)findViewById(R.id.list_view);
         adapter=new SimpleAdapter(this, (List<? extends Map<String, ?>>) getdata(),R.layout.activity_listview_item,
@@ -89,6 +191,7 @@ public class SelectCityActivity extends Activity{
                 new int[] {R.id.cityName,R.id.cityCode});
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new ItemClickEvent());
+
 
         //监听搜索框文本
         eSearch.addTextChangedListener(new TextWatcher() {
@@ -120,13 +223,17 @@ public class SelectCityActivity extends Activity{
             HashMap<String,Object> city = (HashMap<String,Object>)mListView.getItemAtPosition(position);
             String select_city_code=city.get("cityCode").toString();
             Log.d("选择的城市编码：",select_city_code);
-            Intent i2 = new Intent();
-            i2.putExtra("select_city_code",select_city_code);
-            setResult(1,i2);
-
-            finish();
+            back(select_city_code);
 
         }
+    }
+
+    //将选择的城市编码，回传,并跳转到主界面
+    public void back(String select_city_code){
+        Intent i2 = new Intent();
+        i2.putExtra("select_city_code",select_city_code);
+        setResult(1,i2);
+        finish();
     }
 
     //列表显示的内容
