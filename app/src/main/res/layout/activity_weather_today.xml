@@ -7,6 +7,8 @@
     android:background="@drawable/bg_day_qing">
 
     <!--今日天气信息-->
+
+
     <RelativeLayout
         android:id="@+id/weather_today"
         android:layout_width="fill_parent"
@@ -35,26 +37,28 @@
             android:textColor="#ffffffff"
             android:textSize="15.0sp" />
 
+        <!--分享按钮-->
+        <ImageView
+            android:id="@+id/btn_share"
+            android:layout_width="45.0dp"
+            android:layout_height="45.0dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/btn_share"/>
+
+
         <!--更新信息按钮-->
         <ImageView
             android:id="@+id/title_update_btn"
             android:layout_width="45.0dp"
             android:layout_height="45.0dp"
-            android:layout_alignParentRight="true"
             android:layout_gravity="center"
-            android:src="@drawable/title_update"/>
-        <!--更新信息进度条-->
-        <ProgressBar
-            android:id="@+id/title_update_progressbar"
-            android:layout_width="45.0dp"
-            android:layout_height="45.0dp"
+            android:src="@drawable/title_update"
+            android:layout_marginRight="29dp"
+            android:layout_marginEnd="29dp"
             android:layout_alignParentRight="true"
-            android:layout_gravity="center"
-            android:progress="20"
-            android:max="100"
-            style="@style/mProgress_circle"
-            android:indeterminateDuration="1200"
-            android:visibility="gone"/>
+            android:layout_alignParentEnd="true" />
+
+
 
 
         <!--更新时间-->
@@ -62,11 +66,13 @@
             android:id="@+id/update_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="15dp"
+            android:paddingTop="10dp"
             android:text="20:00更新"
             android:textColor="#fdfcfc"
             android:textSize="15.0sp"
-            android:layout_toLeftOf="@id/title_update_btn"/>
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/title_update_btn"
+            android:layout_toStartOf="@+id/title_update_btn" />
         <!--今日天气信息-->
 
         <!--分隔条-->
@@ -292,5 +298,4 @@
             android:paddingBottom="5dp"
             android:src="@drawable/weather_icon_day_qing"/>
     </RelativeLayout>
-
 </RelativeLayout>

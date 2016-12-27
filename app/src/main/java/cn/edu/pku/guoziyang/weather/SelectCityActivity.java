@@ -252,7 +252,7 @@ public class SelectCityActivity extends Activity{
             Map<String, Object> map = new HashMap<String, Object>();
             cityName[i] = city.getCity();
             cityCode[i] = city.getNumber();
-            map.put("cityName",cityName[i]);
+            map.put("cityName",cityName[i] +"，"+ city.getProvince() + "（" + city.getAllPY()+"）");
             map.put("cityCode",cityCode[i]);
             list.add(map);
             i++;

@@ -56,6 +56,7 @@ public class TodayWeatherActivity extends Activity {
     private ImageView mUpdateBtn_cancel;//信息更新按钮,正在更新时显示
     private ImageView mCitySelect;//城市选择按钮
     private ProgressBar title_update_progressbar;
+    private ImageView mShareBtn;//分享按钮
 
 
     //今日天气详细信息
@@ -110,18 +111,34 @@ public class TodayWeatherActivity extends Activity {
         //更新天气信息按钮
         //点击更新按钮
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
-        title_update_progressbar = (ProgressBar) findViewById(R.id.title_update_progressbar);
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mUpdateBtn.setVisibility(View.INVISIBLE);
-                title_update_progressbar.setVisibility(View.VISIBLE);
                 //更新天气信息
                 preUpdateWeather();
                 //提示更新成功
                 Toast.makeText(TodayWeatherActivity.this,"更新成功!",Toast.LENGTH_SHORT).show();
-                title_update_progressbar.setVisibility(View.INVISIBLE);
-                mUpdateBtn.setVisibility(View.VISIBLE);
+            }
+        });
+
+        //分享按钮
+        mShareBtn = (ImageView) findViewById(R.id.btn_share);
+        mShareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(Intent.ACTION_SEND);
+                intent.setType("image/*");
+                String str = todayWeather.getCity() + "今日天气：" + "当前温度"+todayWeather.getWendu()+"℃,"+todayWeather.getType() +
+                        "," + todayWeather.getFengxiang() + todayWeather.getFengli()+
+                        ","+ todayWeather.getHigh() + "~" + todayWeather.getLow()  +
+                        ",湿度" + todayWeather.getShidu() +
+                        ",pm2.5指数" + todayWeather.getPm25() +
+                        ",空气质量为" + todayWeather.getQuality() +
+                        "," + todayWeather.getDate() + " "+ todayWeather.getUpdatetime() + "发布";
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Share");
+                intent.putExtra(Intent.EXTRA_TEXT,str+"."+ " (分享自mini-weather)");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(Intent.createChooser(intent, getTitle()));
             }
         });
 

@@ -20,7 +20,7 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/start_btn_blank"
         android:layout_marginLeft="100dp"
-        android:layout_marginTop="200dp" />
+        android:layout_marginTop="300dp" />
 
 
 </LinearLayout>

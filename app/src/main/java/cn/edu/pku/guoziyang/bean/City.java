@@ -71,6 +71,6 @@ public class City {
 
     @Override
     public String toString() {
-        return "城市列表信息：" + city + " : " +  number+ " : " +  allPY+ " : " +  allFirstPY+ " : " +  firstPV ;
+        return "城市列表信息："+ province + city + " : " +  number+ " : " +  allPY+ " : " +  allFirstPY+ " : " +  firstPV ;
     }
 }
