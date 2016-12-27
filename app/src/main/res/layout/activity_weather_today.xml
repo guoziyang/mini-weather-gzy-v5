@@ -10,8 +10,10 @@
     <RelativeLayout
         android:id="@+id/weather_today"
         android:layout_width="fill_parent"
-        android:layout_height="350dp">
-
+        android:layout_height="350dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <!--顶部工具栏-->
         <!--城市管理按钮-->
@@ -36,11 +38,24 @@
         <!--更新信息按钮-->
         <ImageView
             android:id="@+id/title_update_btn"
-            android:layout_width="34.0dp"
-            android:layout_height="34.0dp"
-            android:paddingTop="15dp"
+            android:layout_width="45.0dp"
+            android:layout_height="45.0dp"
             android:layout_alignParentRight="true"
-            android:src="@drawable/btn_update" />
+            android:layout_gravity="center"
+            android:src="@drawable/title_update"/>
+        <!--更新信息进度条-->
+        <ProgressBar
+            android:id="@+id/title_update_progressbar"
+            android:layout_width="45.0dp"
+            android:layout_height="45.0dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center"
+            android:progress="20"
+            android:max="100"
+            style="@style/mProgress_circle"
+            android:indeterminateDuration="1200"
+            android:visibility="gone"/>
+
 
         <!--更新时间-->
         <TextView
@@ -90,8 +105,6 @@
             android:textSize="20.0sp" />
 
 
-
-
         <!--图标，用于扩展其他功能-->
         <TextView
             android:id="@+id/date_pic"
@@ -117,8 +130,6 @@
 
 
         <!--pm2.5图标背景颜色，污染等级不同颜色不同-->
-
-
         <!--pm2.5-->
         <!--pm2.5图标-->
         <ImageView
@@ -159,9 +170,10 @@
             android:textColor="@android:color/white"
             android:textSize="15.0sp" />
 
+
+
+
     </RelativeLayout>
-
-
     <!--未来三天天气信息-->
     <RelativeLayout
         android:id="@+id/weather_fulture"
@@ -280,9 +292,5 @@
             android:paddingBottom="5dp"
             android:src="@drawable/weather_icon_day_qing"/>
     </RelativeLayout>
-
-
-
-
 
 </RelativeLayout>

@@ -20,13 +20,18 @@
         <activity android:name="cn.edu.pku.guoziyang.weather.MainActivity">
         </activity>
 
+        <!--启动界面-->
+        <activity android:name=".Guide">
+
+        </activity>
+        <!--今日天气界面-->
         <activity android:name="cn.edu.pku.guoziyang.weather.TodayWeatherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <!--选择城市界面-->
         <activity android:name="cn.edu.pku.guoziyang.weather.SelectCityActivity">
         </activity>
 

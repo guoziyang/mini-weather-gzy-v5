@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,12 +53,16 @@ public class TodayWeatherActivity extends Activity {
 
     //按钮
     private ImageView mUpdateBtn;//信息更新按钮
+    private ImageView mUpdateBtn_cancel;//信息更新按钮,正在更新时显示
     private ImageView mCitySelect;//城市选择按钮
+    private ProgressBar title_update_progressbar;
+
 
     //今日天气详细信息
     private TextView cityTv, wenduTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windOTv, windTv, city_name_Tv;
     private ImageView weatherImg,weatherImg2,weatherImg3, pmImg;
     private RelativeLayout relativeLayout;
+
 
     //近三日天气信息
     private TextView temperatureTv1,temperatureTv2,temperatureTv3;//最高气温最低气温
@@ -77,6 +82,19 @@ public class TodayWeatherActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather_today);//关联布局
 
+        //程序第一次执行跳转到引导界面
+        SharedPreferences preferences = getSharedPreferences("count", MODE_PRIVATE);
+        int count = preferences.getInt("count", 0);
+        //判断程序与第几次运行，如果是第一次运行则跳转到引导页面
+        if (count == 0) {
+            Intent i = new Intent(TodayWeatherActivity.this,Guide.class);
+            startActivity(i);
+        }
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("count", ++count);
+        editor.commit();
+
+
         //选择城市按钮
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(new View.OnClickListener() {
@@ -92,15 +110,21 @@ public class TodayWeatherActivity extends Activity {
         //更新天气信息按钮
         //点击更新按钮
         mUpdateBtn = (ImageView) findViewById(R.id.title_update_btn);
+        title_update_progressbar = (ProgressBar) findViewById(R.id.title_update_progressbar);
         mUpdateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mUpdateBtn.setVisibility(View.INVISIBLE);
+                title_update_progressbar.setVisibility(View.VISIBLE);
                 //更新天气信息
                 preUpdateWeather();
                 //提示更新成功
                 Toast.makeText(TodayWeatherActivity.this,"更新成功!",Toast.LENGTH_SHORT).show();
+                title_update_progressbar.setVisibility(View.INVISIBLE);
+                mUpdateBtn.setVisibility(View.VISIBLE);
             }
         });
+
         //初始化UI控件
         initView();
     }

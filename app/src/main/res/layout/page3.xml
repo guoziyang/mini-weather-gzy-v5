@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e9c227">
+
+    <TextView android:id="@+id/text3"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textSize="20sp"
+        android:text="page3" />
+
+    <Button
+        android:id="@+id/start_btn2"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/text"
+        android:layout_marginLeft="100.0dip"
+        android:layout_marginTop="15dip"
+        android:background="#2595d1"
+        android:text="  开始  "
+        android:textColor="#fdfdfd"
+        />
+
+</LinearLayout>
