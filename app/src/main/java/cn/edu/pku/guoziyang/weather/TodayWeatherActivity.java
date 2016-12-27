@@ -103,7 +103,11 @@ public class TodayWeatherActivity extends Activity {
             public void onClick(View v) {
                 //为城市管理按钮添加意图,实现功能:点击后跳转到selectCity页面
                 Intent i = new Intent(TodayWeatherActivity.this,SelectCityActivity.class);
-                i.putExtra("cityName",todayWeather.getCity());
+                if(todayWeather != null){
+                    i.putExtra("cityName",todayWeather.getCity());
+                }else{
+                    i.putExtra("cityName","北京");//默认城市为北京
+                }
                 startActivityForResult(i,1);
             }
         });
